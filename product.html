@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css'
+    integrity='sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw=='
+    crossorigin='anonymous' />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-loading-overlay@4.0.3/dist/vue-loading.css">
+    <link rel="stylesheet" href="all.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 導覽列 -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+              <a class="navbar-brand" href="#">Navbar</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                  </li>
+                  <li>
+                      <a class="nav-link" href="./cart.html">購物車</a>
+                  </li>
+                </ul>
+                <form class="d-flex">
+                  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                  <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+              </div>
+            </div>
+        </nav>
+
+        <!-- 網站banner -->
+
+        <div class="banner bg-cover d-flex justify-content-end align-items-center pe-5" style="background-image:url('https://images.unsplash.com/photo-1555952012-6a700791736f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1052&q=80');height:620px">
+            <div class="banner-text text-white">
+                <h1>CLIMBER</h1>
+                <h3>最美的風景，在台灣</h3>
+                <h5>那些你值得知道的山林小故事</h5>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+              <!-- 左欄選單 -->
+              <div class="col-3 my-4">
+                <div class="list-group " id="list-tab" role="tablist">
+                  <a class="list-group-item list-group-item-action active bg-primary py-3 border-0" id="list-home-list" data-bs-toggle="list" href="#list-home" role="tab" aria-controls="list-home">產品列表</a>
+                  <a class="list-group-item list-group-item-action py-3" id="list-profile-list" data-bs-toggle="list" href="#list-profile" role="tab" aria-controls="list-profile">Profile</a>
+                  <a class="list-group-item list-group-item-action py-3" id="list-messages-list" data-bs-toggle="list" href="#list-messages" role="tab" aria-controls="list-messages">Messages</a>
+                  <a class="list-group-item list-group-item-action py-3" id="list-settings-list" data-bs-toggle="list" href="#list-settings" role="tab" aria-controls="list-settings">Settings</a>
+                </div>
+              </div>
+                <!-- 產品列表 -->
+                <div class="col-9 my-2">
+                  <div class="row">
+                    <div class="col-12 col-md-4 my-3"  v-for="item in products" :key="item.id">
+                      <div class="card h-100 pb-3 "> 
+                        <div class="bg-cover" :style="{backgroundImage:'url('+item.imageUrl+')',height:'200px'}"></div>
+                        <div class="card-body">
+                          <h5 class="card-title">{{item.title}}</h5>
+                          <div class="card-text">
+                            <p>{{item.content}}</p>
+                            <div class="d-flex justify-content-between">
+                                <del><small class="text-muted">原價{{item.origin_price}}元</small></del>
+                                <h5>售價{{item.price}}元</h5>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card-footer border-0 bg-white d-flex justify-content-between">
+                            <button class="btn btn-outline-primary btn-sm" @click="openModal(item)" :disabled="getStatus===item.id">
+                                <i class="fas fa-sync fa-spin" v-if="getStatus===item.id"></i>
+                                查看更多</button>
+                            
+                            <button class="btn btn-outline-success btn-sm" @click="addToCart(item.id)">
+                                <i class="fas fa-spinner fa-pulse" v-if="addCartStatus===item.id"></i>
+                                加入購物車</button>
+                        </div> 
+                    </div>
+                    </div>
+                  </div>
+                    
+                </div>
+
+                <!-- 全域 loading -->
+                <loading :active="isLoading">
+                  <div class="loadingio-spinner-bars-kleg3zocv08">
+                    <div class="ldio-efeexsd5d17">
+                      <div></div><div></div><div></div><div></div>
+                    </div></div>
+                </loading>
+
+                <!-- 分頁 -->
+                <div class="d-flex justify-content-center">
+                    <pagination :page="pagination" @change-page="getProducts"></pagination>
+                </div>
+                <!-- 產品modal -->
+                <modal ref="modal" :product="product" @add-cart="addToCart"></modal>
+            </div>
+        </div>
+        
+    </div>
+
+    <script src="app.js" type="module"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-loading-overlay@4.0.3/dist/vue-loading.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vee-validate/4.1.17/vee-validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vee-validate/i18n@4.1.17/dist/vee-validate-i18n.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vee-validate/rules@4.1.17/dist/vee-validate-rules.min.js"></script>
+</body>
+</html>

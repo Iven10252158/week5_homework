@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css'
+    integrity='sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw=='
+    crossorigin='anonymous' />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-loading-overlay@4.0.3/dist/vue-loading.css">
+    <link rel="stylesheet" href="all.css">
+
+</head>
+<body>
+    <div id="cart">
+    <div class="container">
+        <h4 class="text-center mt-3 bg-success py-3 fw-light text-white mb-0">購物車 SHOPPING CART</h4>
+        <ul class="list-unstyled d-flex justify-content-center bg-dark py-3 fw-light text-white">
+            <li class="border-end border-3 text-center" style="width:8%">編號</li>
+            <li class="border-end border-3 px-5 text-center" style="width:35%">購物明細</li>
+            <li class="border-end border-3 px-5 text-center" style="width:12%">規格</li>
+            <li class="border-end border-3 px-5 text-center" style="width:12%">單價</li>
+            <li class="border-end border-3 px-5 text-center" style="width:12%">數量</li>
+            <li class="border-end border-3 px-5 text-center" style="width:12%">金額</li>
+            <li class="text-center" style="width:8%">取消</li>
+        </ul>
+
+        <ul class="list-unstyled d-flex" v-for="(item,index) in cart.carts" :key="item.id">
+            <li class="text-center" style="width:8%">{{index+1}}</li>
+            <li class="text-center" style="width:35%">{{item.product.title}}</li>
+            <li class="text-center" style="width:12%">{{item.product.content}}</li>
+            <li class="text-center" style="width:12%">{{item.product.price}}</li>
+            <li class="text-center" style="width:5%">
+                <button type="button" class="btn btn-warning btn-sm text-center"
+                :disabled="item.qty===1"    @click="reduce(item)">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </li>
+            <li class="text-center" style="width:3%">{{item.qty}}</li>
+            <li class="text-center" style="width:4%">
+                <button type="button" class="btn btn-outline-secondary btn-sm text-center" @click="addNum(item)"> 
+                    <i class="fas fa-plus"></i>
+                </button>
+            </li>
+            <li class="text-center" style="width:12%">{{item.total}}</li>
+            <li class="text-center" style="width:8%">
+                <button type="button" class="btn btn-outline-danger" 
+                @click="deleteCartProduct(item)">
+                    <i class="far fa-trash-alt"></i>
+                </button>
+            </li>
+        </ul>
+        <ul class="list-unstyled d-flex justify-content-end border-top border-3">
+            <li class="h4 text-danger me-7 pt-2" style="letter-spacing: 2px;">總金額: {{cart.total}}元</li>
+        </ul>
+
+        <div class="h3 text-center mb-0 mt-2">請輸入訂購人資料</div>
+        
+        <!-- 表單驗證 -->
+        <div class="row justify-content-center">
+            <v-form  v-slot="{ errors }" @submit="onSubmit" class="col-md-6">       
+                <label for="email">帳號</label>
+                <v-field id="email" name="email" type="email" class="form-control my-2" 
+                :class="{ 'is-invalid': errors['email'] }" placeholder="請輸入 Email" 
+                rules="email|required" v-model="user.email"></v-field>
+                <error-message name="email" class="invalid-feedback"></error-message>
+
+                <label for="name">訂購人姓名</label>
+                <v-field id="name" name="姓名" type="text" class="form-control my-2" 
+                :class="{ 'is-invalid': errors['姓名'] }" placeholder="請輸入訂購人姓名" 
+                rules="required" v-model="user.name"></v-field>
+                <error-message name="姓名" class="invalid-feedback"></error-message>
+
+                <label for="address">收件地址</label>
+                <v-field id="address" name="地址" type="text" class="form-control my-2" 
+                :class="{ 'is-invalid': errors['地址'] }" placeholder="請輸入收件地址" 
+                rules="required" v-model="user.address"></v-field>
+                <error-message name="地址" class="invalid-feedback"></error-message>
+
+                <label for="address">收件人電話</label>
+                <v-field id="address" name="電話號碼" type="number" class="form-control my-2" 
+                :class="{ 'is-invalid': errors['電話號碼'] }" placeholder="請輸入訂購人電話" 
+                rules="min:7|required" v-model.number="user.phone"></v-field>
+                <error-message name="電話號碼" class="invalid-feedback"></error-message>
+                <button type="submit" class="btn btn-primary my-3">送出</button>
+            </v-form>
+            
+        </div>
+
+        <!-- 全域loading效果 -->
+        <loading :active="isLoading">
+            <div class="loadingio-spinner-bars-kleg3zocv08">
+                <div class="ldio-efeexsd5d17">
+                  <div></div><div></div><div></div><div></div>
+                </div></div>
+        </loading>
+
+    </div>
+    </div>
+
+
+    <script src="cart.js" type="module"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-loading-overlay@4.0.3/dist/vue-loading.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vee-validate/4.1.17/vee-validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vee-validate/i18n@4.1.17/dist/vee-validate-i18n.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vee-validate/rules@4.1.17/dist/vee-validate-rules.min.js"></script>
+</body>
+</html>
